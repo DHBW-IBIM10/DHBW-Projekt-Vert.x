@@ -1,0 +1,3 @@
+[submodule "UI"]
+	path = UI
+	url = https://github.com/DHBW-IBIM10/Async-UI.git
