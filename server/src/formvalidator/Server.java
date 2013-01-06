@@ -1,13 +1,9 @@
+package formvalidator;
 /**
  * Class to demonstrate request handling / matching of parameters.
  *
  * @author Rocco Schulz
  */
-
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.deploy.Verticle;
-
 
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
