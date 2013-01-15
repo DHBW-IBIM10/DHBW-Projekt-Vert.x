@@ -53,6 +53,6 @@ public class Server extends Verticle {
             }
         });
 
-        vertx.createHttpServer().requestHandler(rm).listen(8080);
+        //vertx.createHttpServer().requestHandler(rm).listen(8080);
     }
 }

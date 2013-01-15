@@ -2,6 +2,8 @@ package formvalidator;
 
 import java.util.ArrayList;
 
+import formvalidator.Field;
+
 /**
  * 
  */
