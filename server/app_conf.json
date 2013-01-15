@@ -1,0 +1,16 @@
+{
+    "web_conf": {
+	    "web_root": "../UI",
+	    "index_page": "index.html",
+	    "host": "127.0.0.1",
+	    "port": 8080,
+	    "ssl": false,
+	    "bridge:": true
+    },
+    "verticle2_conf": {
+        "age": 1234,
+        "shoe_size": 12,
+        "pi": 3.14159
+    }      
+}
+
