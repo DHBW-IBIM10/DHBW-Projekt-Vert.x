@@ -3,6 +3,7 @@
  */
 package main;
 
+import org.vertx.java.core.SimpleHandler;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.deploy.Verticle;
 
@@ -14,6 +15,10 @@ public class AppStarter extends Verticle {
 	
 	/** Key for the web config in the conf file */
 	private static final String WEB_CONF = "web_conf";
+	/** Key for http verticle config. */
+	private static final String HTTP_CONF = "http_conf";
+	/** number of available processors */
+	private static final int NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
 	/* (non-Javadoc)
 	 * @see org.vertx.java.deploy.Verticle#start()
@@ -24,13 +29,11 @@ public class AppStarter extends Verticle {
 	@Override
 	public void start() throws Exception {
 		JsonObject appConfig = container.getConfig();
-		JsonObject serverConfig = appConfig.getObject(WEB_CONF);
-		//JsonObject verticle2Config = appConfig.getObject("verticle2_conf");
+		JsonObject httpConfig = appConfig.getObject(HTTP_CONF);
 		
-		//Run web server for static files
-		container.deployModule("vertx.web-server-v1.0", serverConfig);
-		System.out.println("Webserver started: http://127.0.0.1:8080");
-		//container.deployVerticle("main.Server");
+		container.deployVerticle("main.Server", httpConfig);
+		// run calculations in multiple instances to avoid bottleneck.
+		container.deployWorkerVerticle("form.Calculator", NUM_PROCESSORS - 1);
 	}
 
 }

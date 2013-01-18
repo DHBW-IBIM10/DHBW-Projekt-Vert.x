@@ -7,10 +7,9 @@
 	    "ssl": false,
 	    "bridge:": true
     },
-    "verticle2_conf": {
-        "age": 1234,
-        "shoe_size": 12,
-        "pi": 3.14159
+    "http_conf": {
+        "web_root": "../UI",
+        "port": 8080
     }      
 }
 
