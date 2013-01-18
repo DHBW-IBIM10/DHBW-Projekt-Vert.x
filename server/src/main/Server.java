@@ -16,49 +16,53 @@ import org.vertx.java.core.json.JsonObject;
 public class Server extends BusModBase {
 	private String webRoot;
 	private int port;
+	private EventBus eBus;
+	
+	private Handler<HttpServerRequest> formHandler = new Handler<HttpServerRequest>() {
+        public void handle(final HttpServerRequest req) {
+        	JsonObject form = null; //TODO: get form as JSON from request
+        	boolean valid = true; //TODO: validate form
+        	System.out.println("Got post request.");
+        	if(valid){
+        		// trigger calculation in worker verticle
+        		eBus.send("form.calculate", form, new Handler<Message<JsonObject>>() {
+                    public void handle(Message<JsonObject> message) {
+                        req.response.end(message.toString());
+                    }
+                });
+        	} else{
+        		req.response.end("Form invalid"); //TODO: json with all form fields
+        	}
+            
+        }
+    };
+    
+    
+    private Handler<HttpServerRequest> fileHandler = new Handler<HttpServerRequest>() {
+        public void handle(HttpServerRequest req) {
+        	System.out.println("nomatch");
+        	if (req.path.equals("/")) {
+                req.response.sendFile(webRoot + "index.html");
+              } else {
+                //FIXME: This is clearly a security issue.
+            	//		 Kept simple for demonstration purposes.
+                req.response.sendFile(webRoot + req.path);
+              }
+        }
+    };
 
+    
     public void start() {
-
-    	final EventBus eBus = vertx.eventBus();
+    	eBus = vertx.eventBus();
         RouteMatcher rm = new RouteMatcher();
         
         //read configuration file if present
          port = 8080;//getOptionalIntConfig("port", 8080);
          webRoot = "../UI";//getOptionalStringConfig("web_root", "web");
 
-        //return list of customers
-        rm.post("/insurances", new Handler<HttpServerRequest>() {
-            public void handle(final HttpServerRequest req) {
-            	JsonObject form = null; //TODO: get form as JSON from request
-            	boolean valid = true; //TODO: validate form
-            	System.out.println("Got post request.");
-            	if(valid){
-            		// trigger calculation in worker verticle
-            		eBus.send("form.calculate", form, new Handler<Message<JsonObject>>() {
-                        public void handle(Message<JsonObject> message) {
-                            req.response.end(message.toString());
-                        }
-                    });
-            	} else{
-            		req.response.end("Form invalid"); //TODO: json with all form fields
-            	}
-                
-            }
-        });
 
-        //check for static files for requests that cant be matched
-        rm.noMatch(new Handler<HttpServerRequest>() {
-            public void handle(HttpServerRequest req) {
-            	System.out.println("nomatch");
-            	if (req.path.equals("/")) {
-                    req.response.sendFile(webRoot + "index.html");
-                  } else {
-                    //FIXME: This is clearly a security issue.
-                	//		 Kept simple for demonstration purposes.
-                    req.response.sendFile(webRoot + req.path);
-                  }
-            }
-        });
+        rm.post("/insurances", formHandler);
+        rm.noMatch(fileHandler);
         
         vertx.createHttpServer().requestHandler(rm).listen(port);
         
