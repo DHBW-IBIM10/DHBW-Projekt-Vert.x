@@ -1,6 +1,7 @@
 package form;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -19,7 +20,8 @@ public class InsuranceForm {
 	private int amountInsured;
 	private int ownershipStake;
 	
-	private HashMap<String, Object> map = new HashMap<String, Object>();
+	private static final int INVALID_INT = -1;
+	private HashSet<String> invalidFields = new HashSet<String>();
 	
 	/**
 	 * Deserializes a JsonArray into a form instance.
@@ -37,61 +39,36 @@ public class InsuranceForm {
 	 * @param jsarray
 	 */
 	private void init(JsonArray jsarray){
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		for(int i = 0; i<jsarray.size(); i++){
 			JsonObject obj = (JsonObject) jsarray.get(i);
 			map.put(obj.getString("name"), obj.getField("value"));
 		}
 		// And now it gets ugly.
-		// Kids. Don't try this at home.
-		this.address = map.get("address") == null ? "" : map.get("address").toString();
-		this.title = map.get("title") == null ? "" : map.get("title").toString();
-		this.name = map.get("name") == null ? "" : map.get("name").toString();
-		this.surname = map.get("surname") == null ? "" : map.get("surname").toString();
-		this.birthday = map.get("birthday") == null ? "" : map.get("birthday").toString();
-		this.maritalStatus = map.get("maritalStatus") == null ? "" : map.get("maritalStatus").toString();
-		this.streetNr = map.get("streetNr") == null ? "" : map.get("streetNr").toString();
-		this.zip = map.get("zip") == null ? "" : map.get("zip").toString();
-		this.city = map.get("city") == null ? "" : map.get("city").toString();
-		this.career = map.get("career") == null ? "" : map.get("career").toString();
-		this.amountInsured = map.get("amountInsured") == null ? -1 : Integer.valueOf(map.get("amountInsured").toString());
-		this.ownershipStake = map.get("ownershipStake") == null ? -1 : Integer.valueOf(map.get("ownershipStake").toString());
-		
+		// What follows is a great example how code should not look like.
+		this.setAddress(map.get("address") == null ? "" : map.get("address").toString());
+		this.setTitle(map.get("title") == null ? "" : map.get("title").toString());
+		this.setName(map.get("name") == null ? "" : map.get("name").toString());
+		this.setSurname(map.get("surname") == null ? "" : map.get("surname").toString());
+		this.setBirthday(map.get("birthday") == null ? "" : map.get("birthday").toString());
+		this.setMaritalStatus(map.get("maritalStatus") == null ? "" : map.get("maritalStatus").toString());
+		this.setStreetNr(map.get("streetNr") == null ? "" : map.get("streetNr").toString());
+		this.setZip(map.get("zip") == null ? "" : map.get("zip").toString());
+		this.setCity(map.get("city") == null ? "" : map.get("city").toString());
+		this.setCareer(map.get("career") == null ? "" : map.get("career").toString());
+		this.setAmountInsured(map.get("amountInsured") == null ? INVALID_INT : Integer.valueOf(map.get("amountInsured").toString()));
+		this.setOwnershipStake(map.get("ownershipStake") == null ? INVALID_INT : Integer.valueOf(map.get("ownershipStake").toString()));
 	}
 
 	
-	/**
-	 * @return true when all form fields are valid.
-	 */
-	public boolean isValid(){
-		return true;
-		//TODO: check all fields for validity
-	}
-	
-	public JsonArray getValidatedFields(){
-		//TODO: prepare json that can be returned to client
-		return new JsonArray();
-	}
-	
-	
-	/**
-	 * @return the address
-	 */
-	public final String getAddress() {
-		return address;
-	}
-
 	/**
 	 * @param address the address to set
 	 */
 	public final void setAddress(String address) {
 		this.address = address;
-	}
-
-	/**
-	 * @return the title
-	 */
-	public final String getTitle() {
-		return title;
+		if(!Validators.isValidAddress(address)){
+			this.invalidFields.add("address");
+		}
 	}
 
 	/**
@@ -99,27 +76,21 @@ public class InsuranceForm {
 	 */
 	public final void setTitle(String title) {
 		this.title = title;
+		if(!Validators.isValidTitle(title)){
+			this.invalidFields.add("title");
+		}
 	}
 
-	/**
-	 * @return the name
-	 */
-	public final String getName() {
-		return name;
-	}
+
 
 	/**
 	 * @param name the name to set
 	 */
 	public final void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * @return the surname
-	 */
-	public final String getSurname() {
-		return surname;
+		if(!Validators.isValidString(name)){
+			this.invalidFields.add("name");
+		}
 	}
 
 	/**
@@ -127,13 +98,9 @@ public class InsuranceForm {
 	 */
 	public final void setSurname(String surname) {
 		this.surname = surname;
-	}
-
-	/**
-	 * @return the birthday
-	 */
-	public final String getBirthday() {
-		return birthday;
+		if(!Validators.isValidString(surname)){
+			this.invalidFields.add("surname");
+		}
 	}
 
 	/**
@@ -141,13 +108,9 @@ public class InsuranceForm {
 	 */
 	public final void setBirthday(String birthday) {
 		this.birthday = birthday;
-	}
-
-	/**
-	 * @return the maritalStatus
-	 */
-	public final String getMaritalStatus() {
-		return maritalStatus;
+		if(!Validators.isValidDate(birthday)){
+			this.invalidFields.add("birthday");
+		}
 	}
 
 	/**
@@ -155,27 +118,19 @@ public class InsuranceForm {
 	 */
 	public final void setMaritalStatus(String maritalStatus) {
 		this.maritalStatus = maritalStatus;
-	}
-
-	/**
-	 * @return the streetNr
-	 */
-	public final String getStreetNr() {
-		return streetNr;
+		if(!Validators.isValidMaritalStatus(maritalStatus)){
+			this.invalidFields.add("maritalStatus");
+		}
 	}
 
 	/**
 	 * @param streetNr the streetNr to set
 	 */
-	public final void setStreetNr(String streetNr) {
+	public final void setStreetNr(String street) {
 		this.streetNr = streetNr;
-	}
-
-	/**
-	 * @return the zip
-	 */
-	public final String getZip() {
-		return zip;
+		if(!Validators.isValidString(street)){
+			this.invalidFields.add("streetNr");
+		}
 	}
 
 	/**
@@ -183,13 +138,9 @@ public class InsuranceForm {
 	 */
 	public final void setZip(String zip) {
 		this.zip = zip;
-	}
-
-	/**
-	 * @return the city
-	 */
-	public final String getCity() {
-		return city;
+		if(zip.length() != 5){
+			this.invalidFields.add("zip");
+		}
 	}
 
 	/**
@@ -197,13 +148,9 @@ public class InsuranceForm {
 	 */
 	public final void setCity(String city) {
 		this.city = city;
-	}
-
-	/**
-	 * @return the career
-	 */
-	public final String getCareer() {
-		return career;
+		if(!Validators.isValidString(city)){
+			this.invalidFields.add("city");
+		}
 	}
 
 	/**
@@ -211,13 +158,9 @@ public class InsuranceForm {
 	 */
 	public final void setCareer(String career) {
 		this.career = career;
-	}
-
-	/**
-	 * @return the amountInsured
-	 */
-	public final int getAmountInsured() {
-		return amountInsured;
+		if(!Validators.isValidString(career)){
+			this.invalidFields.add("career");
+		}
 	}
 
 	/**
@@ -225,20 +168,34 @@ public class InsuranceForm {
 	 */
 	public final void setAmountInsured(int amountInsured) {
 		this.amountInsured = amountInsured;
-	}
-
-	/**
-	 * @return the ownershipStake
-	 */
-	public final int getOwnershipStake() {
-		return ownershipStake;
+		if(amountInsured == INVALID_INT){
+			this.invalidFields.add("amountInsured");
+		}
 	}
 
 	/**
 	 * @param ownershipStake the ownershipStake to set
 	 */
-	public final void setOwnershipStake(int ownershipStake) {
+	public void setOwnershipStake(int ownershipStake) {
 		this.ownershipStake = ownershipStake;
+		if(ownershipStake == INVALID_INT){
+			this.invalidFields.add("ownerShipStake");
+		}
+	}
+
+	/**
+	 * @return true when all form fields are valid.
+	 */
+	public boolean isValid(){
+		return this.invalidFields.size() == 0;
+	}	
+	
+	public JsonArray getInvalidFields(){
+		//transform list into JsonArray
+		JsonArray arr = new JsonArray(this.invalidFields.toArray());
+		return arr;
+		
+		
 	}
 	
 	

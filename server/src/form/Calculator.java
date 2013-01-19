@@ -33,6 +33,7 @@ public class Calculator extends Verticle {
                     try {
                     	//simulate long operation
                         Thread.sleep(1000);
+                                                
                     } catch (Exception ex) {
                     	//nothing to do.
                     }
@@ -40,8 +41,7 @@ public class Calculator extends Verticle {
                     message.reply(reply);
                     
                 } else {
-                	//TODO: 
-                    JsonArray reply = new JsonArray();
+                    JsonArray reply = form.getInvalidFields();
                     message.reply(reply);                	
                 }
 
