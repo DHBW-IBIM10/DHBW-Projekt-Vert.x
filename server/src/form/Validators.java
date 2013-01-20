@@ -45,7 +45,7 @@ public class Validators {
 	
 	static boolean isValidTitle(String title) {
 		final List<String> validTitles = new ArrayList<String>(
-			    Arrays.asList("Sir", "Dipl.", "Dr.", "Prof. Dr.", "Dr. h.c.", ""));
+			    Arrays.asList("Sir", "Dipl.", "Dr.", "Prof. Dr.", "Dr. h.c.", "---"));
 		if(validTitles.contains(title)){
 			return true;
 		}

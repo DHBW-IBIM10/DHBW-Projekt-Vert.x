@@ -21,7 +21,8 @@ public class InsuranceForm {
 	private int ownershipStake;
 	
 	private static final int INVALID_INT = -1;
-	private HashSet<String> invalidFields = new HashSet<String>();
+	/** names and values of the invalid fields. */
+	private HashMap<String, String> invalidFields = new HashMap<String, String>();
 	
 	/**
 	 * Deserializes a JsonArray into a form instance.
@@ -31,6 +32,10 @@ public class InsuranceForm {
 	public InsuranceForm(JsonArray jsarray){
 		super();
 		init(jsarray);
+	}
+	
+	public InsuranceForm(){
+		super();
 	}
 
 	/**
@@ -67,7 +72,7 @@ public class InsuranceForm {
 	public final void setAddress(String address) {
 		this.address = address;
 		if(!Validators.isValidAddress(address)){
-			this.invalidFields.add("address");
+			this.invalidFields.put("address", address);
 		}
 	}
 
@@ -77,7 +82,7 @@ public class InsuranceForm {
 	public final void setTitle(String title) {
 		this.title = title;
 		if(!Validators.isValidTitle(title)){
-			this.invalidFields.add("title");
+			this.invalidFields.put("title", title);
 		}
 	}
 
@@ -89,7 +94,7 @@ public class InsuranceForm {
 	public final void setName(String name) {
 		this.name = name;
 		if(!Validators.isValidString(name)){
-			this.invalidFields.add("name");
+			this.invalidFields.put("name", name);
 		}
 	}
 
@@ -99,7 +104,7 @@ public class InsuranceForm {
 	public final void setSurname(String surname) {
 		this.surname = surname;
 		if(!Validators.isValidString(surname)){
-			this.invalidFields.add("surname");
+			this.invalidFields.put("surname", surname);
 		}
 	}
 
@@ -109,7 +114,7 @@ public class InsuranceForm {
 	public final void setBirthday(String birthday) {
 		this.birthday = birthday;
 		if(!Validators.isValidDate(birthday)){
-			this.invalidFields.add("birthday");
+			this.invalidFields.put("birthday", birthday);
 		}
 	}
 
@@ -119,7 +124,7 @@ public class InsuranceForm {
 	public final void setMaritalStatus(String maritalStatus) {
 		this.maritalStatus = maritalStatus;
 		if(!Validators.isValidMaritalStatus(maritalStatus)){
-			this.invalidFields.add("maritalStatus");
+			this.invalidFields.put("maritalStatus", maritalStatus);
 		}
 	}
 
@@ -129,7 +134,7 @@ public class InsuranceForm {
 	public final void setStreetNr(String street) {
 		this.streetNr = streetNr;
 		if(!Validators.isValidString(street)){
-			this.invalidFields.add("streetNr");
+			this.invalidFields.put("streetNr", street);
 		}
 	}
 
@@ -139,7 +144,7 @@ public class InsuranceForm {
 	public final void setZip(String zip) {
 		this.zip = zip;
 		if(zip.length() != 5){
-			this.invalidFields.add("zip");
+			this.invalidFields.put("zip", zip);
 		}
 	}
 
@@ -149,7 +154,7 @@ public class InsuranceForm {
 	public final void setCity(String city) {
 		this.city = city;
 		if(!Validators.isValidString(city)){
-			this.invalidFields.add("city");
+			this.invalidFields.put("city", city);
 		}
 	}
 
@@ -159,7 +164,7 @@ public class InsuranceForm {
 	public final void setCareer(String career) {
 		this.career = career;
 		if(!Validators.isValidString(career)){
-			this.invalidFields.add("career");
+			this.invalidFields.put("career", career);
 		}
 	}
 
@@ -169,7 +174,7 @@ public class InsuranceForm {
 	public final void setAmountInsured(int amountInsured) {
 		this.amountInsured = amountInsured;
 		if(amountInsured == INVALID_INT){
-			this.invalidFields.add("amountInsured");
+			this.invalidFields.put("amountInsured", String.valueOf(amountInsured));
 		}
 	}
 
@@ -179,7 +184,7 @@ public class InsuranceForm {
 	public void setOwnershipStake(int ownershipStake) {
 		this.ownershipStake = ownershipStake;
 		if(ownershipStake == INVALID_INT){
-			this.invalidFields.add("ownerShipStake");
+			this.invalidFields.put("ownerShipStake", String.valueOf(ownershipStake));
 		}
 	}
 
@@ -192,10 +197,31 @@ public class InsuranceForm {
 	
 	public JsonArray getInvalidFields(){
 		//transform list into JsonArray
-		JsonArray arr = new JsonArray(this.invalidFields.toArray());
+		//JsonArray arr = new JsonArray(this.invalidFields.toArray());
+		JsonArray arr = new JsonArray();
+		for(String fieldname : invalidFields.keySet()){
+			JsonObject obj = new JsonObject();
+			obj.putString("name", fieldname);
+			obj.putString("value", invalidFields.get(fieldname));
+			arr.addObject(obj);
+		}
 		return arr;
-		
-		
+	}
+	
+	
+	/**
+	 * Simulates a long running calculation operation.
+	 * This method causes the executing thread to sleep for one second before
+	 * returning a random value.
+	 * @return a random number
+	 */
+	public int getInsuranceFee(){
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			return -1;
+		}
+		return (int) Math.round(Math.random() * 1000);
 	}
 	
 	

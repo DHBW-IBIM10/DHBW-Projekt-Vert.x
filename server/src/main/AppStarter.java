@@ -34,6 +34,7 @@ public class AppStarter extends Verticle {
 		container.deployVerticle("main.Server", httpConfig);
 		// run calculations in multiple instances to avoid bottleneck.
 		container.deployWorkerVerticle("form.Calculator", NUM_PROCESSORS - 1);
+		//container.deployWorkerVerticle("form.Calculator", 1);
 	}
 
 }
