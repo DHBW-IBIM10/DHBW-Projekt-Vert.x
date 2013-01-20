@@ -26,7 +26,7 @@ public class Calculator extends Verticle {
 			long start = System.currentTimeMillis();
             InsuranceForm form = new InsuranceForm();
             JsonObject fee = new JsonObject();
-            fee.putString("price", String.valueOf(form.getInsuranceFee()));
+            fee.putNumber("price", form.getInsuranceFee());
             message.reply(fee);
             long stop = System.currentTimeMillis();
             System.out.println("Calculation handler completed after " + (stop - start) + "ms");
