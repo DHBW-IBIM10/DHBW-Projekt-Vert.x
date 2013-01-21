@@ -211,17 +211,21 @@ public class InsuranceForm {
 	
 	/**
 	 * Simulates a long running calculation operation.
-	 * This method causes the executing thread to sleep for one second before
-	 * returning a random value.
+	 * This method causes the executing thread to sleep a bit before
+	 * returning the calculated fee.
 	 * @return a random number
 	 */
 	public int getInsuranceFee(){
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			return -1;
 		}
-		return (int) Math.round(Math.random() * 1000);
+		if(this.amountInsured < this.ownershipStake || this.amountInsured == 0){
+			return 999;
+		}
+		/** var JSONdata = {price: Math.round(0.5*(req.body[0].SummeInput-req.body[0].BehaltInput))}; */
+		return (int) Math.round(0.5 * (this.amountInsured - this.ownershipStake));
 	}
 	
 	

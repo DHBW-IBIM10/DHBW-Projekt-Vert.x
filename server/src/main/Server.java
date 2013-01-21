@@ -93,6 +93,7 @@ public class Server extends BusModBase {
 					eBus.send("form.calculate", form,
 							new Handler<Message<JsonObject>>() {
 								public void handle(Message<JsonObject> message) {
+									req.response.headers().put("Content-Type", "application/json; charset=utf-8");
 									req.response.end(message.body.encode());
 								}
 							});
@@ -179,8 +180,9 @@ public class Server extends BusModBase {
         JsonObject addressCreate = new JsonObject().putString("address", "form.create");
         inboundPermitted.add(addressData);
         inboundPermitted.add(addressCreate);
-        outboundPermitted.add(new JsonObject().putString("address_re", "form.client.data\\.\\d+"));
-        vertx.createSockJSServer(server).bridge(bridgeConfig, inboundPermitted, new JsonArray().add(new JsonObject()));
+        outboundPermitted.add(new JsonObject().putString("address_re", "form.data.client\\.\\d+"));
+        //all allowed: new JsonArray().add(new JsonObject()
+        vertx.createSockJSServer(server).bridge(bridgeConfig, inboundPermitted,  outboundPermitted);
         server.listen(port, "127.0.0.1");
     }
 }

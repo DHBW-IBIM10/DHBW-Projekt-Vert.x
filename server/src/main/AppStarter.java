@@ -31,7 +31,7 @@ public class AppStarter extends Verticle {
 		JsonObject appConfig = container.getConfig();
 		JsonObject httpConfig = appConfig.getObject(HTTP_CONF);
 		
-		container.deployVerticle("main.Server", httpConfig);
+		container.deployVerticle("main.Server", httpConfig, 6);
 		// run calculations in multiple instances to avoid bottleneck.
 		container.deployWorkerVerticle("form.Calculator", NUM_PROCESSORS - 1);
 		//container.deployWorkerVerticle("form.Calculator", 1);
