@@ -30,42 +30,52 @@ public class Server extends BusModBase {
 	    public void handle(final ServerWebSocket ws) {
 	    	ws.dataHandler(new Handler<Buffer>() {
 	            public void handle(Buffer buffer) {
+	            	logger.info("socketHandler:");
 	            	logger.info(buffer.toString());
 	                ws.writeBuffer(buffer);
 	            }
 	        });
-	        //actions:
-	    	// 'createForm' - new form, sends data
-	    	// data used for socket.room = data
-	    	// socket.join(data)
-	    	
-	    	// 'liveform' - data
-	    	// emit data on all sockets in the socket.room with key 'liveform'
 	}};
 	
-    //event bus handlers for the sockjs server
+    /**
+     * Prints messages that
+     */
     private Handler<Message> echoHandler = new Handler<Message>() {
         public void handle(Message message) {
-            System.out.println("I received a message on " + message.replyAddress + ": " + message.body);
+            logger.info("I received a message on " + message.replyAddress + ": " + message.body);
         }
     };
     
+
+    /**
+     * Registers client in an address room.
+     */
     private Handler<Message> formCreateHandler = new Handler<Message>() {
         public void handle(Message message) {
             //TODO: assign "room" for communication / register client in room
         	logger.info("not yet implemented");
+        	logger.info(message.body);
         }
     };
     
+
+    /**
+     * Forwards form data to the websocket clients.
+     */
     private Handler<Message> formDataHandler = new Handler<Message>() {
         public void handle(Message message) {
-        	System.out.println("message body: " +  message.body);
-        	eBus.send("form.client.data", new JsonObject(message.body.toString()));
+        	logger.info("message body: " +  message.body);
+        	JsonObject json = new JsonObject(message.body.toString());
+        	String address = "form.data.client." + json.getString("formid");
+        	logger.info("Address: " + address);
+        	eBus.publish(address, json);
         }
     };
 	
 	
-	
+	/**
+	 * Triggers the fee calculation based on the given form data.
+	 */
 	private Handler<HttpServerRequest> calcHandler = new Handler<HttpServerRequest>() {
 		public void handle(final HttpServerRequest req) {
 			// read body of request
@@ -92,6 +102,9 @@ public class Server extends BusModBase {
 		}
 	};
 	
+	/**
+	 * Triggers the evaluation of the form instance.
+	 */
 	private Handler<HttpServerRequest> formHandler = new Handler<HttpServerRequest>() {
 		public void handle(final HttpServerRequest req) {
 			// read body of request
@@ -112,6 +125,9 @@ public class Server extends BusModBase {
 		}
 	};
     
+	/**
+	 * Interprets the request path as file request and returns the file if present in the UI folder.
+	 */
     private Handler<HttpServerRequest> fileHandler = new Handler<HttpServerRequest>() {
         public void handle(HttpServerRequest req) {
         	if (req.path.equals("/")) {
@@ -125,6 +141,7 @@ public class Server extends BusModBase {
     };
 
     
+
     public void start() {
     	logger = container.getLogger();
     	eBus = vertx.eventBus();
@@ -162,8 +179,8 @@ public class Server extends BusModBase {
         JsonObject addressCreate = new JsonObject().putString("address", "form.create");
         inboundPermitted.add(addressData);
         inboundPermitted.add(addressCreate);
-        outboundPermitted.add(new JsonObject().putString("address", "form.client.data"));
-        vertx.createSockJSServer(server).bridge(bridgeConfig, inboundPermitted, outboundPermitted);
+        outboundPermitted.add(new JsonObject().putString("address_re", "form.client.data\\.\\d+"));
+        vertx.createSockJSServer(server).bridge(bridgeConfig, inboundPermitted, new JsonArray().add(new JsonObject()));
         server.listen(port, "127.0.0.1");
     }
 }
