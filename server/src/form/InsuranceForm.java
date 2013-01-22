@@ -31,7 +31,19 @@ public class InsuranceForm {
 	 */
 	public InsuranceForm(JsonArray jsarray){
 		super();
-		init(jsarray);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		for(int i = 0; i<jsarray.size(); i++){
+			JsonObject obj = (JsonObject) jsarray.get(i);
+			map.put(obj.getString("name"), obj.getField("value"));
+		}
+		init(map);
+	}
+	
+	public InsuranceForm(JsonObject obj){
+		super();
+		HashMap<String, Object> map = (HashMap<String, Object>) obj.toMap();
+		System.out.println(map.keySet());
+		init(map);
 	}
 	
 	public InsuranceForm(){
@@ -43,12 +55,7 @@ public class InsuranceForm {
 	 * values on this instance.
 	 * @param jsarray
 	 */
-	private void init(JsonArray jsarray){
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		for(int i = 0; i<jsarray.size(); i++){
-			JsonObject obj = (JsonObject) jsarray.get(i);
-			map.put(obj.getString("name"), obj.getField("value"));
-		}
+	private void init(HashMap<String, Object> map){
 		// And now it gets ugly.
 		// What follows is a great example how code should not look like.
 		this.setAddress(map.get("address") == null ? "" : map.get("address").toString());
@@ -222,10 +229,9 @@ public class InsuranceForm {
 			return -1;
 		}
 		if(this.amountInsured < this.ownershipStake || this.amountInsured == 0){
-			return 999;
+			return 0;
 		}
-		/** var JSONdata = {price: Math.round(0.5*(req.body[0].SummeInput-req.body[0].BehaltInput))}; */
-		return (int) Math.round(0.5 * (this.amountInsured - this.ownershipStake));
+		return (int) Math.round(0.1 * (this.amountInsured - this.ownershipStake));
 	}
 	
 	

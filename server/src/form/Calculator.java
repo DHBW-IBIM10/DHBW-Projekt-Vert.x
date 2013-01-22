@@ -24,7 +24,7 @@ public class Calculator extends Verticle {
 	private Handler<Message<JsonObject>> calculationHandler = new Handler<Message<JsonObject>>() {
 		public void handle(Message<JsonObject> message) {
 			long start = System.currentTimeMillis();
-            InsuranceForm form = new InsuranceForm();
+            InsuranceForm form = new InsuranceForm(message.body);
             JsonObject fee = new JsonObject();
             fee.putNumber("price", form.getInsuranceFee());
             message.reply(fee);

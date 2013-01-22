@@ -36,15 +36,6 @@ public class Server extends BusModBase {
 	            }
 	        });
 	}};
-	
-    /**
-     * Prints messages that
-     */
-    private Handler<Message> echoHandler = new Handler<Message>() {
-        public void handle(Message message) {
-            logger.info("I received a message on " + message.replyAddress + ": " + message.body);
-        }
-    };
     
 
     /**
